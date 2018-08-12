@@ -1,6 +1,7 @@
 var Renderer = require('./renderer.js');
 var Game = require('./game.js');
 var Snake = require('./snake.js');
+var Fruit = require('./fruit.js');
 var keys = require('./keyboard.js');
 
 var BLOCK_WIDTH = 16;
@@ -20,11 +21,43 @@ var player = new Snake(
   BLOCK_WIDTH,
   BLOCK_HEIGHT
 );
+var fruits = [];
+var fruitColor = '#c00';
+var fruitDelta = 0;
+var fruitDelay = 1500;
+var lastFruit = 0;
 
 console.log(player);
 
 game.onUpdate = function(delta) {
+  var now = performance.now();
+
+  if (fruits.length < 1) {
+    fruitDelta = now - lastFruit;
+
+    if (fruitDelta >= fruitDelay) {
+      console.log("width: ", renderer.canvas.width, "; height: ", renderer.canvas.height);
+      fruits[0] = new Fruit(
+        fruitColor,
+        parseInt(Math.random() * renderer.canvas.width / 2, 10),
+        parseInt(Math.random() * renderer.canvas.height / 2, 10),
+        BLOCK_WIDTH,
+        BLOCK_HEIGHT
+      );
+      console.log(fruits[0]);
+    }
+  }
+
   player.update(delta);
+
+  if (fruits.length > 0) {
+    if (player.head.x === fruits[0].x &&
+      player.head.y === fruits[0].y) {
+
+      fruits = [];
+      lastFruit = now;
+    }
+  }
 };
 
 game.onRender = function() {
@@ -38,6 +71,16 @@ game.onRender = function() {
       player.width,
       player.height
     );
+
+    fruits.forEach(function(fruit) {
+      ctx.fillStyle = fruit.color;
+      ctx.fillRect(
+        fruit.x + fruit.width,
+        fruit.y + fruit.height,
+        fruit.width,
+        fruit.height
+      );
+    });
   });
 };
 
