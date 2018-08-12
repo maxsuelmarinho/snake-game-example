@@ -1,6 +1,7 @@
 var Renderer = require('./renderer.js');
 var Game = require('./game.js');
 var Snake = require('./snake.js');
+var keys = require('./keyboard.js');
 
 var BLOCK_WIDTH = 16;
 var BLOCK_HEIGHT = 16;
@@ -22,7 +23,8 @@ var player = new Snake(
 
 console.log(player);
 
-game.onUpdate = function() {
+game.onUpdate = function(delta) {
+  player.update(delta);
 };
 
 game.onRender = function() {
@@ -66,4 +68,21 @@ window.addEventListener('resize', resizeGame, false);
 window.addEventListener('orientationchange', resizeGame, false);
 resizeGame();
 
-game.start();
+document.body.addEventListener('keydown', function(e) {
+  var key = e.keyCode;
+
+  switch(key) {
+    case keys.ESC:
+      game.stop();
+      break;
+    case keys.SPACEBAR:
+      game.start();
+      break;
+    case keys.LEFT:
+    case keys.RIGHT:
+    case keys.UP:
+    case keys.DOWN:
+      player.setKey(key);
+      break;
+  }
+});
