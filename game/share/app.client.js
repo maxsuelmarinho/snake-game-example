@@ -12,25 +12,63 @@ var renderer =
 var game = new Game(FPS);
 
 var playerAColor = '#0c0';
-var player = new Snake(
-  parseInt(Math.random() * 999999, 10),
-  playerAColor,
-  parseInt(Math.random() * window.innerWidth / 1.5, 10),
-  parseInt(Math.random() * window.innerHeight / 1.5, 10),
-  BLOCK_WIDTH,
-  BLOCK_HEIGHT
-);
-var fruits = [];
+var player;
+
+var fruits;
 var fruitColor = '#c00';
-var fruitDelta = 0;
+var fruitDelta;
 var fruitDelay = 1500;
-var lastFruit = 0;
+var lastFruit;
 
 var ctx = renderer.ctx;
 var scoreWidget = document.querySelector('#scoreA span');
 var gameOver = document.getElementById('gameOver');
 
-console.log(player);
+function initGame() {
+  gameOver.classList.add('hidden');
+  scoreWidget.textContent = '000000';
+
+  player = new Snake(
+    parseInt(Math.random() * 999999, 10),
+    playerAColor,
+    parseInt(Math.random() * window.innerWidth / 1.5, 10),
+    parseInt(Math.random() * window.innerHeight / 1.5, 10),
+    BLOCK_WIDTH,
+    BLOCK_HEIGHT
+  );
+
+  player.on(Snake.events.POWER_UP, function(event) {
+    var score = event.size * 10;
+    scoreWidget.textContent = '000000'.slice(0, -(score + '').length) + score + '';
+  });
+
+  player.on(Snake.events.COLLISION, function(event) {
+    scoreWidget.parentElement.classList.add('gameOver');
+
+    game.stop();
+    setTimeout(function() {
+      ctx.fillStyle = '#f00';
+      ctx.fillRect(
+        event.point.x * player.width,
+        event.point.y * player.height,
+        player.width,
+        player.height
+      );
+    }, 0);
+
+    setTimeout(function() {
+      gameOver.classList.remove('hidden');
+    }, 100);
+  });
+
+  console.log(player);
+
+  fruits = [];
+  lastFruit = 0;
+  fruitDelta = 0;
+
+  game.start();
+}
 
 game.onUpdate = function(delta) {
   var now = performance.now();
@@ -107,30 +145,6 @@ game.onRender = function() {
   });
 };
 
-player.on(Snake.events.POWER_UP, function(event) {
-  var score = event.size * 10;
-  scoreWidget.textContent = '000000'.slice(0, -(score + '').length) + score + '';
-});
-
-player.on(Snake.events.COLLISION, function(event) {
-  scoreWidget.parentElement.classList.add('gameOver');
-
-  game.stop();
-  setTimeout(function() {
-    ctx.fillStyle = '#f00';
-    ctx.fillRect(
-      event.point.x * player.width,
-      event.point.y * player.height,
-      player.width,
-      player.height
-    );
-  }, 0);
-
-  setTimeout(function() {
-    gameOver.classList.remove('hidden');
-  }, 100);
-});
-
 function resizeGame() {
   var gameArea = document.getElementById('gameArea');
   var widthToHeight = 4 / 3;
@@ -166,7 +180,7 @@ document.body.addEventListener('keydown', function(e) {
       game.stop();
       break;
     case keys.SPACEBAR:
-      game.start();
+      initGame();
       break;
     case keys.LEFT:
     case keys.RIGHT:
