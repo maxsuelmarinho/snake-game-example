@@ -1,4 +1,6 @@
 var keys = require('./keyboard.js');
+var EventEmitter = require('events').EventEmitter;
+var util = require('util');
 
 var Snake = function(id, colorHex, x, y, width, height) {
   this.id = id;
@@ -13,6 +15,13 @@ var Snake = function(id, colorHex, x, y, width, height) {
   this.input = {};
   this.readyToGrow = false;
 };
+
+Snake.events = {
+  POWER_UP: 'Snake:powerup',
+  COLLISION: 'Snake:collision'
+};
+
+util.inherits(Snake, EventEmitter);
 
 Snake.prototype.setKey = function(key) {
   this.input[keys.UP] = false;
@@ -61,7 +70,10 @@ Snake.prototype.checkCollision = function() {
   }, this);
 
   if (collide) {
-    console.log("collided!!!");
+    this.emit(Snake.events.COLLISION, {
+      id: this.id,
+      point: this.head
+    });
   }
 };
 
