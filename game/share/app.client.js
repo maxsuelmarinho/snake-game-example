@@ -39,8 +39,8 @@ game.onUpdate = function(delta) {
       console.log("width: ", renderer.canvas.width, "; height: ", renderer.canvas.height);
       fruits[0] = new Fruit(
         fruitColor,
-        parseInt(Math.random() * renderer.canvas.width / 2, 10),
-        parseInt(Math.random() * renderer.canvas.height / 2, 10),
+        parseInt(Math.random() * renderer.canvas.width / BLOCK_WIDTH / 2, 10),
+        parseInt(Math.random() * renderer.canvas.height / BLOCK_HEIGHT / 2, 10),
         BLOCK_WIDTH,
         BLOCK_HEIGHT
       );
@@ -49,6 +49,24 @@ game.onUpdate = function(delta) {
   }
 
   player.update(delta);
+
+  if (player.head.x < 0) {
+    player.head.x =
+      parseInt(renderer.canvas.width / player.width, 10);
+  }
+
+  if (player.head.x > parseInt(renderer.canvas.width / player.width, 10)) {
+    player.head.x = 0;
+  }
+
+  if (player.head.y < 0) {
+    player.head.y =
+      parseInt(renderer.canvas.height / player.height, 10);
+  }
+
+  if (player.head.y > parseInt(renderer.canvas.height / player.height, 10)) {
+    player.head.y = 0;
+  }
 
   if (fruits.length > 0) {
     if (player.head.x === fruits[0].x &&
@@ -66,8 +84,8 @@ game.onRender = function() {
   ctx.fillStyle = player.color;
   player.pieces.forEach(function(piece) {
     ctx.fillRect(
-      piece.x + player.width,
-      piece.y + player.height,
+      piece.x * player.width,
+      piece.y * player.height,
       player.width,
       player.height
     );
@@ -75,8 +93,8 @@ game.onRender = function() {
     fruits.forEach(function(fruit) {
       ctx.fillStyle = fruit.color;
       ctx.fillRect(
-        fruit.x + fruit.width,
-        fruit.y + fruit.height,
+        fruit.x * fruit.width,
+        fruit.y * fruit.height,
         fruit.width,
         fruit.height
       );
