@@ -10,7 +10,6 @@ var FPS = 20;
 var renderer =
   new Renderer(0, 0, document.getElementById('gameCanvas'));
 var game = new Game(FPS);
-var ctx = renderer.ctx;
 
 var playerAColor = '#0c0';
 var player = new Snake(
@@ -26,6 +25,9 @@ var fruitColor = '#c00';
 var fruitDelta = 0;
 var fruitDelay = 1500;
 var lastFruit = 0;
+
+var ctx = renderer.ctx;
+var scoreWidget = document.querySelector('#scoreA span');
 
 console.log(player);
 
@@ -103,6 +105,11 @@ game.onRender = function() {
     });
   });
 };
+
+player.on(Snake.events.POWER_UP, function(event) {
+  var score = event.size * 10;
+  scoreWidget.textContent = '000000'.slice(0, -(score + '').length) + score + '';
+})
 
 function resizeGame() {
   var gameArea = document.getElementById('gameArea');
