@@ -49,6 +49,7 @@ game.onUpdate = function(delta) {
   }
 
   player.update(delta);
+  player.checkCollision();
 
   if (player.head.x < 0) {
     player.head.x =

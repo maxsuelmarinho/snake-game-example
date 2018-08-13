@@ -53,4 +53,16 @@ Snake.prototype.grow = function() {
   this.readyToGrow = true;
 };
 
+Snake.prototype.checkCollision = function() {
+  var collide = this.pieces.some(function(piece, i) {
+    return i > 0 &&
+      piece.x === this.head.x &&
+      piece.y === this.head.y
+  }, this);
+
+  if (collide) {
+    console.log("collided!!!");
+  }
+};
+
 module.exports = Snake;
