@@ -72,6 +72,7 @@ game.onUpdate = function(delta) {
     if (player.head.x === fruits[0].x &&
       player.head.y === fruits[0].y) {
 
+      player.grow();
       fruits = [];
       lastFruit = now;
     }
@@ -81,8 +82,8 @@ game.onUpdate = function(delta) {
 game.onRender = function() {
   ctx.clearRect(0, 0, renderer.canvas.width, renderer.canvas.height);
 
-  ctx.fillStyle = player.color;
   player.pieces.forEach(function(piece) {
+    ctx.fillStyle = player.color;
     ctx.fillRect(
       piece.x * player.width,
       piece.y * player.height,
