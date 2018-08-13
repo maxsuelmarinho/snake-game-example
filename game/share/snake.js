@@ -60,6 +60,11 @@ Snake.prototype.update = function(delta) {
 
 Snake.prototype.grow = function() {
   this.readyToGrow = true;
+
+  this.emit(Snake.events.POWER_UP, {
+    id: this.id,
+    size: this.pieces.length
+  });
 };
 
 Snake.prototype.checkCollision = function() {
