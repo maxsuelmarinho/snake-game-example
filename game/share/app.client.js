@@ -28,6 +28,7 @@ var lastFruit = 0;
 
 var ctx = renderer.ctx;
 var scoreWidget = document.querySelector('#scoreA span');
+var gameOver = document.getElementById('gameOver');
 
 console.log(player);
 
@@ -109,7 +110,26 @@ game.onRender = function() {
 player.on(Snake.events.POWER_UP, function(event) {
   var score = event.size * 10;
   scoreWidget.textContent = '000000'.slice(0, -(score + '').length) + score + '';
-})
+});
+
+player.on(Snake.events.COLLISION, function(event) {
+  scoreWidget.parentElement.classList.add('gameOver');
+
+  game.stop();
+  setTimeout(function() {
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(
+      event.point.x * player.width,
+      event.point.y * player.height,
+      player.width,
+      player.height
+    );
+  }, 0);
+
+  setTimeout(function() {
+    gameOver.classList.remove('hidden');
+  }, 100);
+});
 
 function resizeGame() {
   var gameArea = document.getElementById('gameArea');
