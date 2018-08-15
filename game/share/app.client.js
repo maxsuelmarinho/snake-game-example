@@ -3,6 +3,8 @@ var Game = require('./game.js');
 var Snake = require('./snake.js');
 var Fruit = require('./fruit.js');
 var keys = require('./keyboard.js');
+var gameEvents = require('./events.js');
+var socket = require('socket.io-client')(window.location.origin);
 
 var BLOCK_WIDTH = 16;
 var BLOCK_HEIGHT = 16;
@@ -23,6 +25,12 @@ var lastFruit;
 var ctx = renderer.ctx;
 var scoreWidget = document.querySelector('#scoreA span');
 var gameOver = document.getElementById('gameOver');
+
+var roomList = document.getElementById('roomList');
+var screens = {
+  main: document.getElementById('main'),
+  lobby: document.getElementById('lobby')
+};
 
 function initGame() {
   gameOver.classList.add('hidden');
