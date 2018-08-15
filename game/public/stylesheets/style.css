@@ -57,6 +57,28 @@ p {
   text-shadow: 0 5px 0 #333;
 }
 
+#lobby {
+  background: #fff;
+  width: 100%;
+  height: 100%;
+}
+
+#roomList div {
+  padding: 20px 20px 80px;
+  background: #0b997c4;
+  color: #fff;
+  margin: 20px;
+  float: left;
+  width: 25%;
+  min-width: 200px;
+  font-size: 3em;
+  cursor: pointer;
+}
+
+#roomList div.newRoomWidget {
+  background: #0BC462;
+}
+
 .animated {
   -webkit-animation-duration: 2.5s;
   animation-duration: 2.5s;
