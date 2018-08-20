@@ -25,9 +25,9 @@ module.exports = {
     return rooms.map(function(room, index) {
       return {
         roomId: index,
-        players: room.players.map(function(playerId) {
+        players: room.players.map(function(player) {
           return {
-            id: playerId
+            id: player.playerId
           };
         })
       }

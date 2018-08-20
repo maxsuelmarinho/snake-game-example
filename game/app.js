@@ -60,6 +60,11 @@ io.on('connection', function(socket) {
     console.log('Sending event:', gameEvents.client_roomsList);
     socket.emit(gameEvents.client_roomsList, rooms);
   });
+
+  socket.on(gameEvents.server_joinRoom, function(data) {
+    console.log('Event: ', gameEvents.server_joinRoom);
+    game.joinRoom(data.roomId, this, data.id);
+  });
 });
 
 module.exports = app;

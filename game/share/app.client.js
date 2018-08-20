@@ -208,7 +208,7 @@ socket.on('connect', function() {
 });
 
 socket.on(gameEvents.client_roomJoined, function(data) {
-  console.log("Event:", gameEvents.client_roomJoined);
+  console.log("Event:", gameEvents.client_roomJoined, "Room id:", data.roomId);
   roomId = data.roomId
 
   screens.lobby.classList.add('hidden');
@@ -218,7 +218,7 @@ socket.on(gameEvents.client_roomJoined, function(data) {
 });
 
 socket.on(gameEvents.client_roomsList, function(rooms) {
-  console.log("Event:", gameEvents.client_roomsList, ". Rooms:", rooms);
+  console.log("Event:", gameEvents.client_roomsList, "Rooms:", rooms);
 
   rooms.map(function(room) {
     var textContent = room.players.length +
