@@ -1,4 +1,5 @@
 var Room = require('./room.js');
+var gameEvents = require('./../share/events.js');
 
 var rooms = [];
 
@@ -12,5 +13,10 @@ module.exports = {
     console.log('Player:', playerId, 'joined room:', roomId);
     var room = rooms[roomId];
     room.join(playerId, socket);
+
+    console.log('Sending event:', gameEvents.client_roomJoined);
+    socket.emit(gameEvents.client_roomJoined, {
+      roomId: roomId
+    });
   }
 };

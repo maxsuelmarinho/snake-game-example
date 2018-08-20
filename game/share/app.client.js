@@ -39,11 +39,6 @@ roomWidget.addEventListener('click', function() {
   socket.emit(gameEvents.server_newRoom, {
     id: player.id
   });
-
-  screens.lobby.classList.add('hidden');
-  screens.main.classList.remove('hidden');
-
-  game.start();
 });
 roomList.appendChild(roomWidget);
 
@@ -217,4 +212,14 @@ document.body.addEventListener('keydown', function(e) {
 
 socket.on('connect', function() {
   console.log("client connected");
+});
+
+socket.on(gameEvents.client_roomJoined, function(data) {
+  console.log("Event:", gameEvents.client_roomJoined);
+  roomId = data.roomId
+
+  screens.lobby.classList.add('hidden');
+  screens.main.classList.remove('hidden');
+
+  game.start();
 });
