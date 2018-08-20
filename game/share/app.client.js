@@ -198,3 +198,7 @@ document.body.addEventListener('keydown', function(e) {
       break;
   }
 });
+
+socket.on('connect', function() {
+  console.log("client connected");
+});
