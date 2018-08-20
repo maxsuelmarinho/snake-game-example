@@ -50,6 +50,7 @@ io.on('connection', function(socket) {
   socket.on(gameEvents.server_newRoom, function(data) {
     console.log('Event: ', gameEvents.server_newRoom);
     var roomId = game.newRoom();
+    game.joinRoom(roomId, this, data.id);
   });
 });
 
