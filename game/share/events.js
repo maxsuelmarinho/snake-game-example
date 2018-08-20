@@ -1,3 +1,4 @@
 module.exports = {
-  client_roomsList: 'client:roomsList'
+  client_roomsList: 'client:roomsList',
+  server_newRoom: 'server:newRoom'
 };

@@ -9,6 +9,9 @@ var usersRouter = require('./routes/users');
 
 var io = require('socket.io')();
 
+var gameEvents = require('./share/events.js');
+var game = require('./server/app.js');
+
 var app = express();
 app.io = io;
 
@@ -43,6 +46,11 @@ app.use(function(err, req, res, next) {
 
 io.on('connection', function(socket) {
   console.log("new client connection");
+
+  socket.on(gameEvents.server_newRoom, function(data) {
+    console.log('Event: ', gameEvents.server_newRoom);
+    var roomId = game.newRoom();
+  });
 });
 
 module.exports = app;

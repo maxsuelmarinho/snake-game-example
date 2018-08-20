@@ -32,6 +32,21 @@ var screens = {
   lobby: document.getElementById('lobby')
 };
 
+var roomWidget = document.createElement('div');
+roomWidget.classList.add('newRoomWidget');
+roomWidget.textContent = 'New Game';
+roomWidget.addEventListener('click', function() {
+  socket.emit(gameEvents.server_newRoom, {
+    id: player.id
+  });
+
+  screens.lobby.classList.add('hidden');
+  screens.main.classList.remove('hidden');
+
+  game.start();
+});
+roomList.appendChild(roomWidget);
+
 function initGame() {
   gameOver.classList.add('hidden');
   scoreWidget.textContent = '000000';
@@ -74,9 +89,9 @@ function initGame() {
   fruits = [];
   lastFruit = 0;
   fruitDelta = 0;
-
-  game.start();
 }
+
+initGame();
 
 game.onUpdate = function(delta) {
   var now = performance.now();
@@ -189,6 +204,7 @@ document.body.addEventListener('keydown', function(e) {
       break;
     case keys.SPACEBAR:
       initGame();
+      game.start();
       break;
     case keys.LEFT:
     case keys.RIGHT:
