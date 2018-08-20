@@ -32,16 +32,6 @@ var screens = {
   lobby: document.getElementById('lobby')
 };
 
-var roomWidget = document.createElement('div');
-roomWidget.classList.add('newRoomWidget');
-roomWidget.textContent = 'New Game';
-roomWidget.addEventListener('click', function() {
-  socket.emit(gameEvents.server_newRoom, {
-    id: player.id
-  });
-});
-roomList.appendChild(roomWidget);
-
 function initGame() {
   gameOver.classList.add('hidden');
   scoreWidget.textContent = '000000';
@@ -212,6 +202,9 @@ document.body.addEventListener('keydown', function(e) {
 
 socket.on('connect', function() {
   console.log("client connected");
+
+  console.log('Sending event:', gameEvents.server_listRooms);
+  socket.emit(gameEvents.server_listRooms);
 });
 
 socket.on(gameEvents.client_roomJoined, function(data) {
@@ -223,3 +216,39 @@ socket.on(gameEvents.client_roomJoined, function(data) {
 
   game.start();
 });
+
+socket.on(gameEvents.client_roomsList, function(rooms) {
+  console.log("Event:", gameEvents.client_roomsList, ". Rooms:", rooms);
+
+  rooms.map(function(room) {
+    var textContent = room.players.length +
+      ' player' + (room.players.length > 1 ? 's' : '');
+    var roomWidget = createRoomWidget(textContent, function() {
+
+      console.log('Sending event:', gameEvents.server_joinRoom);
+      socket.emit(gameEvents.server_joinRoom, {
+        roomId: room.roomId,
+        playerId: player.id
+      })
+    });
+    roomList.appendChild(roomWidget);
+  });
+
+  var roomWidget = createRoomWidget('New Game', function() {
+
+    console.log('Sending event:', gameEvents.server_newRoom);
+    socket.emit(gameEvents.server_newRoom, {
+      id: player.id
+    });
+  });
+  roomWidget.classList.add('newRoomWidget');
+  roomList.appendChild(roomWidget);
+});
+
+function createRoomWidget(text, clickCallback) {
+  var roomWidget = document.createElement('div');
+  roomWidget.textContent = text;
+  roomWidget.addEventListener('click', clickCallback);
+
+  return roomWidget;
+}

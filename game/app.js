@@ -52,6 +52,14 @@ io.on('connection', function(socket) {
     var roomId = game.newRoom();
     game.joinRoom(roomId, this, data.id);
   });
+
+  socket.on(gameEvents.server_listRooms, function() {
+    console.log('Event: ', gameEvents.server_listRooms);
+    var rooms = game.listRooms();
+
+    console.log('Sending event:', gameEvents.client_roomsList);
+    socket.emit(gameEvents.client_roomsList, rooms);
+  });
 });
 
 module.exports = app;

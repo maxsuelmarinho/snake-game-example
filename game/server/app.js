@@ -9,6 +9,7 @@ module.exports = {
     rooms.push(room);
     return rooms.length - 1;
   },
+
   joinRoom: function(roomId, socket, playerId) {
     console.log('Player:', playerId, 'joined room:', roomId);
     var room = rooms[roomId];
@@ -18,5 +19,18 @@ module.exports = {
     socket.emit(gameEvents.client_roomJoined, {
       roomId: roomId
     });
-  }
+  },
+
+  listRooms: function() {
+    return rooms.map(function(room, index) {
+      return {
+        roomId: index,
+        players: room.players.map(function(playerId) {
+          return {
+            id: playerId
+          };
+        })
+      }
+    });
+  },
 };
