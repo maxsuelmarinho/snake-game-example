@@ -5,8 +5,8 @@ var rooms = [];
 var FPS = 60;
 
 module.exports = {
-  newRoom: function() {
-    var room = new Room(FPS);
+  newRoom: function(maxWidth, maxHeight) {
+    var room = new Room(FPS, maxWidth, maxHeight);
     rooms.push(room);
     return rooms.length - 1;
   },

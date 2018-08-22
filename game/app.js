@@ -49,7 +49,7 @@ io.on('connection', function(socket) {
 
   socket.on(gameEvents.server_newRoom, function(data) {
     console.log('Event: ', gameEvents.server_newRoom);
-    var roomId = game.newRoom();
+    var roomId = game.newRoom(data.maxWidth, data.maxHeight);
     game.joinRoom(roomId, this, data.id);
   });
 

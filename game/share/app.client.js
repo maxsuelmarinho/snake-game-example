@@ -81,6 +81,7 @@ initGame();
 game.onUpdate = function(delta) {
   var now = performance.now();
 
+  /*
   if (fruits.length < 1) {
     fruitDelta = now - lastFruit;
 
@@ -96,6 +97,7 @@ game.onUpdate = function(delta) {
       console.log(fruits[0]);
     }
   }
+  */
 
   player.update(delta);
   player.checkCollision();
@@ -216,6 +218,7 @@ socket.on(gameEvents.client_roomJoined, function(data) {
 
   console.log("Player " + player.id + " joined room " + roomId);
 
+  console.log('Sending event:', gameEvents.server_startRoom);
   socket.emit(gameEvents.server_startRoom, {
     roomId: roomId
   });
@@ -244,11 +247,25 @@ socket.on(gameEvents.client_roomsList, function(rooms) {
   var roomWidget = createRoomWidget('New Game', function() {
     console.log('Sending event:', gameEvents.server_newRoom);
     socket.emit(gameEvents.server_newRoom, {
-      id: player.id
+      id: player.id,
+      maxWidth: window.innerWidth,
+      maxHeight: window.innerHeight
     });
   });
   roomWidget.classList.add('newRoomWidget');
   roomList.appendChild(roomWidget);
+});
+
+socket.on(gameEvents.client_newFruit, function(fruit) {
+  console.log('Event:', gameEvents.client_newFruit);
+
+  fruits[0] = new Fruit(
+    fruitColor,
+    parseInt(fruit.x / BLOCK_WIDTH, 10),
+    parseInt(fruit.y / BLOCK_HEIGHT, 10),
+    BLOCK_WIDTH,
+    BLOCK_HEIGHT
+  );
 });
 
 function createRoomWidget(text, clickCallback) {
