@@ -65,6 +65,11 @@ io.on('connection', function(socket) {
     console.log('Event: ', gameEvents.server_joinRoom);
     game.joinRoom(data.roomId, this, data.id);
   });
+
+  socket.on(gameEvents.server_startRoom, function(data) {
+    console.log('Event: ', gameEvents.server_startRoom);
+    game.startRoom(data.roomId);
+  });
 });
 
 module.exports = app;

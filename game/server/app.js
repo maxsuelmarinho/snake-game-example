@@ -2,10 +2,11 @@ var Room = require('./room.js');
 var gameEvents = require('./../share/events.js');
 
 var rooms = [];
+var FPS = 60;
 
 module.exports = {
   newRoom: function() {
-    var room = new Room();
+    var room = new Room(FPS);
     rooms.push(room);
     return rooms.length - 1;
   },
@@ -13,6 +14,7 @@ module.exports = {
   joinRoom: function(roomId, socket, playerId) {
     console.log('Player:', playerId, 'joined room:', roomId);
     var room = rooms[roomId];
+
     room.join(playerId, socket);
 
     console.log('Sending event:', gameEvents.client_roomJoined);
@@ -33,4 +35,9 @@ module.exports = {
       }
     });
   },
+
+  startRoom: function(roomId) {
+    console.log('Server:startRoom');
+    rooms[roomId].start();
+  }
 };

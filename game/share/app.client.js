@@ -214,17 +214,24 @@ socket.on(gameEvents.client_roomJoined, function(data) {
   screens.lobby.classList.add('hidden');
   screens.main.classList.remove('hidden');
 
+  console.log("Player " + player.id + " joined room " + roomId);
+
+  socket.emit(gameEvents.server_startRoom, {
+    roomId: roomId
+  });
+
   game.start();
 });
 
 socket.on(gameEvents.client_roomsList, function(rooms) {
   console.log("Event:", gameEvents.client_roomsList, "Rooms:", rooms);
 
-  rooms.map(function(room) {
+  rooms.map(function(room, index) {
+    console.log("Room " + index + ": " + room.players.length + " player(s)");
+
     var textContent = room.players.length +
       ' player' + (room.players.length > 1 ? 's' : '');
     var roomWidget = createRoomWidget(textContent, function() {
-
       console.log('Sending event:', gameEvents.server_joinRoom);
       socket.emit(gameEvents.server_joinRoom, {
         roomId: room.roomId,
@@ -235,7 +242,6 @@ socket.on(gameEvents.client_roomsList, function(rooms) {
   });
 
   var roomWidget = createRoomWidget('New Game', function() {
-
     console.log('Sending event:', gameEvents.server_newRoom);
     socket.emit(gameEvents.server_newRoom, {
       id: player.id
