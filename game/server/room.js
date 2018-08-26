@@ -9,7 +9,7 @@ var Room = function(fps, worldWidth, worldHeight) {
   this.fruits = [];
   this.fruitColor = '#c00';
   this.fruitDelay = 1500;
-  this.lastfruit = 0;
+  this.lastFruit = 0;
   this.fruitDelta = 0;
   var self = this;
 
@@ -20,7 +20,11 @@ var Room = function(fps, worldWidth, worldHeight) {
     if (self.fruits.length < 1) {
       self.fruitDelta = now - self.lastFruit;
 
-      if (self.fruitDelay >= self.fruitDelay) {
+      console.log("lastFruit", self.lastFruit, 
+        "fruitDelay", self.fruitDelay, 
+        "fruitDelta", self.fruitDelta);
+        
+      if (self.fruitDelta >= self.fruitDelay) {
         console.log("Generating a new fruit");
         var position = {
           x: parseInt(Math.random() * worldWidth, 10),
@@ -36,7 +40,7 @@ var Room = function(fps, worldWidth, worldHeight) {
       }
     }
 
-    self.lastfruit = now;
+    self.lastFruit = now;
   };
 };
 
