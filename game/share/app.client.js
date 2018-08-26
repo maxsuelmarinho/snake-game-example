@@ -26,6 +26,7 @@ var ctx = renderer.ctx;
 var scoreWidget = document.querySelector('#scoreA span');
 var gameOver = document.getElementById('gameOver');
 
+var roomId = 0;
 var roomList = document.getElementById('roomList');
 var screens = {
   main: document.getElementById('main'),
@@ -198,6 +199,11 @@ document.body.addEventListener('keydown', function(e) {
     case keys.UP:
     case keys.DOWN:
       player.setKey(key);
+      socket.emit(gameEvents.server_setPlayerKey, {
+        roomId: roomId,
+        playerId: player.id,
+        keyCode: key
+      });
       break;
   }
 });
@@ -238,7 +244,12 @@ socket.on(gameEvents.client_roomsList, function(rooms) {
       console.log('Sending event:', gameEvents.server_joinRoom);
       socket.emit(gameEvents.server_joinRoom, {
         roomId: room.roomId,
-        playerId: player.id
+        player: {
+          id: player.id,
+          x: player.head.x,
+          y: player.head.y,
+          color: player.color,
+        }
       })
     });
     roomList.appendChild(roomWidget);
@@ -247,7 +258,12 @@ socket.on(gameEvents.client_roomsList, function(rooms) {
   var roomWidget = createRoomWidget('New Game', function() {
     console.log('Sending event:', gameEvents.server_newRoom);
     socket.emit(gameEvents.server_newRoom, {
-      id: player.id,
+      player: {
+        id: player.id,
+        x: player.head.x,
+        y: player.head.y,
+        color: player.color
+      },
       maxWidth: window.innerWidth,
       maxHeight: window.innerHeight
     });
@@ -266,6 +282,8 @@ socket.on(gameEvents.client_newFruit, function(fruit) {
     BLOCK_WIDTH,
     BLOCK_HEIGHT
   );
+
+  console.log("snake", player, "Fruit client", fruits[0], "fruit server", fruit);
 });
 
 function createRoomWidget(text, clickCallback) {

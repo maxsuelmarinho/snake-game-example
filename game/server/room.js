@@ -16,31 +16,43 @@ var Room = function(fps, worldWidth, worldHeight) {
   game = new Game(fps);
 
   game.onUpdate = function(delta) {
-    var now = process.hrtime()[1];
-    if (self.fruits.length < 1) {
-      self.fruitDelta = now - self.lastFruit;
+    self.generateFruit(worldWidth, worldHeight);
 
-      console.log("lastFruit", self.lastFruit, 
-        "fruitDelay", self.fruitDelay, 
-        "fruitDelta", self.fruitDelta);
-        
-      if (self.fruitDelta >= self.fruitDelay) {
-        console.log("Generating a new fruit");
-        var position = {
-          x: parseInt(Math.random() * worldWidth, 10),
-          y: parseInt(Math.random() * worldHeight, 10),
-        };
+    self.players.map(function(player) {
+      var snake = player.snake;
+      snake.update(delta);
+      snake.checkCollision();
 
-        self.addFruit(position);
-        self.players.map(function(player) {
-          console.log("Notifying players about the new fruit generated on position(x: " + position.x + "; y: " + position.y + ")");
-          console.log('Event: ', gameEvents.client_newFruit);
-          player.socket.emit(gameEvents.client_newFruit, position);
-        });
+      if (snake.head.x < 0) {
+        snake.head.x = worldWidth;
       }
-    }
 
-    self.lastFruit = now;
+      if (snake.head.x > worldWidth) {
+        snake.head.x = 0;
+      }
+
+      if (snake.head.y < 0) {
+        snake.head.y = worldHeight;
+      }
+
+      if (snake.head.y > worldHeight) {
+        snake.head.y = 0;
+      }
+
+      if (self.fruits.length > 0) {
+        var x = parseInt(snake.head.x / 16, 10);
+        var y = parseInt(snake.head.y / 16, 10);
+
+        console.log("snake[x: " + x + "; y: " + y + "] fruit[x: " + self.fruits[0].x + "; y: " + self.fruits[0].y + "]");
+
+        if (x === self.fruits[0].x &&
+          y === self.fruits[0].y) {
+            console.log("Snake ate the fruit.");
+            self.fruits = [];
+            snake.grow();
+          }
+      }
+    });
   };
 };
 
@@ -49,13 +61,43 @@ Room.prototype.start = function() {
   game.start();
 };
 
-Room.prototype.join = function(playerId, socket) {
-  if (this.players.indexOf(playerId) < 0) {
+Room.prototype.join = function(snake, socket) {
+  if (this.players.indexOf(snake.id) < 0) {
     this.players.push({
-      playerId: playerId,
+      snake: snake,
       socket: socket
     });
   }
+};
+
+Room.prototype.generateFruit = function (worldWidth, worldHeight) {
+  var now = process.hrtime()[1];
+
+  if (this.fruits.length < 1) {
+    this.fruitDelta = now - this.lastFruit;
+
+    console.log("lastFruit", this.lastFruit,
+      "fruitDelay", this.fruitDelay,
+      "fruitDelta", this.fruitDelta);
+
+    if (this.fruitDelta >= this.fruitDelay) {
+      console.log("Generating a new fruit");
+      var position = {
+        x: parseInt(Math.random() * worldWidth, 10),
+        y: parseInt(Math.random() * worldHeight, 10),
+      };
+
+      this.addFruit(position);
+      this.players.map(function (player) {
+        console.log("Notifying players about the new fruit generated on position(x: " +
+          position.x + "; y: " + position.y + ")");
+        console.log('Event: ', gameEvents.client_newFruit);
+        player.socket.emit(gameEvents.client_newFruit, position);
+      });
+    }
+  }
+
+  this.lastFruit = now;
 };
 
 Room.prototype.addFruit = function(position) {
@@ -66,6 +108,10 @@ Room.prototype.addFruit = function(position) {
     1,
     1
   );
+};
+
+Room.prototype.getPlayers = function() {
+  return this.players;
 };
 
 module.exports = Room;

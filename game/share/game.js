@@ -1,5 +1,4 @@
 var tick = require('./tick.js');
-tick = tick(100);
 
 var Game = function(fps) {
   this.fps = fps;

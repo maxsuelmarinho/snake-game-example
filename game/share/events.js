@@ -6,4 +6,5 @@ module.exports = {
   server_joinRoom: 'server:joinRoom',
   server_listRooms: 'server:listRooms',
   server_startRoom: 'server:startRoom',
+  server_setPlayerKey: 'server:setPlayerKey'
 };

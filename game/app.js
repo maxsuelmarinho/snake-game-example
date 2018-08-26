@@ -8,9 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var io = require('socket.io')();
-
-var gameEvents = require('./share/events.js');
-var game = require('./server/app.js');
+var GameServer = require('./server/gameServer.js');
 
 var app = express();
 app.io = io;
@@ -44,32 +42,12 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+var gameServer = new GameServer();
+
 io.on('connection', function(socket) {
   console.log("new client connection");
 
-  socket.on(gameEvents.server_newRoom, function(data) {
-    console.log('Event: ', gameEvents.server_newRoom);
-    var roomId = game.newRoom(data.maxWidth, data.maxHeight);
-    game.joinRoom(roomId, this, data.id);
-  });
-
-  socket.on(gameEvents.server_listRooms, function() {
-    console.log('Event: ', gameEvents.server_listRooms);
-    var rooms = game.listRooms();
-
-    console.log('Sending event:', gameEvents.client_roomsList);
-    socket.emit(gameEvents.client_roomsList, rooms);
-  });
-
-  socket.on(gameEvents.server_joinRoom, function(data) {
-    console.log('Event: ', gameEvents.server_joinRoom);
-    game.joinRoom(data.roomId, this, data.id);
-  });
-
-  socket.on(gameEvents.server_startRoom, function(data) {
-    console.log('Event: ', gameEvents.server_startRoom);
-    game.startRoom(data.roomId);
-  });
+  gameServer.connection(socket);
 });
 
 module.exports = app;
