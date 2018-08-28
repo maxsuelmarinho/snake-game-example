@@ -14,6 +14,7 @@ var Snake = function(id, colorHex, x, y, width, height) {
   this.pieces = [this.head];
   this.input = {};
   this.readyToGrow = false;
+  this.speed = 16;
 };
 
 Snake.events = {
@@ -48,13 +49,13 @@ Snake.prototype.update = function(delta) {
   }
 
   if (this.input[keys.LEFT]) {
-      this.head.x += -1;
+    this.head.x += -this.speed * delta;
   } else if (this.input[keys.RIGHT]) {
-    this.head.x += 1;
+    this.head.x += this.speed * delta;
   } else if (this.input[keys.UP]) {
-    this.head.y += -1;
+    this.head.y += -this.speed * delta;
   } else if (this.input[keys.DOWN]) {
-    this.head.y += 1;
+    this.head.y += this.speed * delta;
   }
 };
 

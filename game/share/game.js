@@ -24,7 +24,7 @@ Game.prototype.loop = function(now) {
   
   var delta = now - this.lastTime;
   if (delta >= this.delay) {
-    this.update(delta);
+    this.update(delta * 0.001);
     this.render();
     this.lastTime = now;
   }

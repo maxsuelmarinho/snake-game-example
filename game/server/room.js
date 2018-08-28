@@ -20,7 +20,7 @@ var Room = function(fps, worldWidth, worldHeight) {
   
   this.game.onUpdate = function(delta) {
     self.updateCount++;
-    console.log("updateCount", self.updateCount);
+    //console.log("updateCount", self.updateCount);
     self.generateFruit(worldWidth, worldHeight);
 
     self.players.map(function(player) {
