@@ -21,7 +21,7 @@ Game.prototype.render = function() {
 
 Game.prototype.loop = function(now) {
   this.raf = tick(this.loop.bind(this));
-
+  
   var delta = now - this.lastTime;
   if (delta >= this.delay) {
     this.update(delta);

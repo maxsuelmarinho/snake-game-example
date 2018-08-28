@@ -13,9 +13,14 @@ var Room = function(fps, worldWidth, worldHeight) {
   this.fruitDelta = 0;
   var self = this;
 
-  game = new Game(fps);
-
-  game.onUpdate = function(delta) {
+  this.game = new Game(fps);
+  this.gameUpdateRate = 1;
+  this.gameUpdates = 0;
+  this.updateCount = 0;
+  
+  this.game.onUpdate = function(delta) {
+    self.updateCount++;
+    console.log("updateCount", self.updateCount);
     self.generateFruit(worldWidth, worldHeight);
 
     self.players.map(function(player) {
@@ -39,26 +44,26 @@ var Room = function(fps, worldWidth, worldHeight) {
         snake.head.y = 0;
       }
 
-      if (self.fruits.length > 0) {
-        var x = parseInt(snake.head.x / 16, 10);
-        var y = parseInt(snake.head.y / 16, 10);
-
-        console.log("snake[x: " + x + "; y: " + y + "] fruit[x: " + self.fruits[0].x + "; y: " + self.fruits[0].y + "]");
-
-        if (x === self.fruits[0].x &&
-          y === self.fruits[0].y) {
-            console.log("Snake ate the fruit.");
-            self.fruits = [];
-            snake.grow();
-          }
-      }
+      self.checkFruitCollision(snake);
     });
+
+    if (++self.gameUpdates % self.gameUpdateRate === 0) {
+      self.gameUpdates = 0;
+      var data = self.players.map(function(player) {
+        return player.snake;
+      });
+
+      self.players.map(function(player) {
+        //console.log('Sending event:', gameEvents.client_playerState);
+        player.socket.emit(gameEvents.client_playerState, data);
+      });
+    }
   };
 };
 
 Room.prototype.start = function() {
   console.log('Room:start');
-  game.start();
+  this.game.start();
 };
 
 Room.prototype.join = function(snake, socket) {
@@ -98,6 +103,22 @@ Room.prototype.generateFruit = function (worldWidth, worldHeight) {
   }
 
   this.lastFruit = now;
+};
+
+Room.prototype.checkFruitCollision = function(snake) {
+  if (this.fruits.length > 0) {
+    var x = parseInt(snake.head.x / BLOCK_WIDTH, 10);
+    var y = parseInt(snake.head.y / BLOCK_HEIGHT, 10);
+
+    //console.log("snake[x: " + x + "; y: " + y + "] fruit[x: " + self.fruits[0].x + "; y: " + self.fruits[0].y + "]");
+
+    if (x === this.fruits[0].x &&
+      y === this.fruits[0].y) {
+      console.log("Snake ate the fruit.");
+      this.fruits = [];
+      snake.grow();
+    }
+  }
 };
 
 Room.prototype.addFruit = function(position) {

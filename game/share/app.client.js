@@ -13,8 +13,8 @@ var renderer =
   new Renderer(0, 0, document.getElementById('gameCanvas'));
 var game = new Game(FPS);
 
-var playerAColor = '#0c0';
 var player;
+var otherPlayers = [];
 
 var fruits;
 var fruitColor = '#c00';
@@ -33,13 +33,15 @@ var screens = {
   lobby: document.getElementById('lobby')
 };
 
+var updateCount = 0;
+
 function initGame() {
   gameOver.classList.add('hidden');
   scoreWidget.textContent = '000000';
 
   player = new Snake(
     parseInt(Math.random() * 999999, 10),
-    playerAColor,
+    randomColor(),
     parseInt(Math.random() * window.innerWidth / 1.5, 10),
     parseInt(Math.random() * window.innerHeight / 1.5, 10),
     BLOCK_WIDTH,
@@ -75,11 +77,15 @@ function initGame() {
   fruits = [];
   lastFruit = 0;
   fruitDelta = 0;
+
+  otherPlayers = [];
 }
 
 initGame();
 
 game.onUpdate = function(delta) {
+  updateCount++;
+  console.log("updateCount", updateCount);
   var now = performance.now();
 
   /*
@@ -135,26 +141,42 @@ game.onUpdate = function(delta) {
 game.onRender = function() {
   ctx.clearRect(0, 0, renderer.canvas.width, renderer.canvas.height);
 
-  player.pieces.forEach(function(piece) {
-    ctx.fillStyle = player.color;
-    ctx.fillRect(
-      piece.x * player.width,
-      piece.y * player.height,
-      player.width,
-      player.height
-    );
+  snakeRender(player);
 
-    fruits.forEach(function(fruit) {
-      ctx.fillStyle = fruit.color;
-      ctx.fillRect(
-        fruit.x * fruit.width,
-        fruit.y * fruit.height,
-        fruit.width,
-        fruit.height
-      );
-    });
+  fruits.forEach(function (fruit) {
+    fruitRender(fruit);
+  });
+
+  otherPlayers.map(function(player) {
+    snakeRender(player);
   });
 };
+
+function snakeRender(snake) {
+  snake.pieces.forEach(function (piece) {
+    ctx.fillStyle = snake.color;
+    ctx.fillRect(
+      piece.x * snake.width,
+      piece.y * snake.height,
+      snake.width,
+      snake.height
+    );
+  });
+}
+
+function fruitRender(fruit) {
+  ctx.fillStyle = fruit.color;
+  ctx.fillRect(
+    fruit.x * fruit.width,
+    fruit.y * fruit.height,
+    fruit.width,
+    fruit.height
+  );
+}
+
+function randomColor() {
+  return "#" + ((1 << 24) * Math.random() | 0).toString(16);
+}
 
 function resizeGame() {
   var gameArea = document.getElementById('gameArea');
@@ -205,6 +227,11 @@ document.body.addEventListener('keydown', function(e) {
         keyCode: key
       });
       break;
+    case keys.D:
+      console.log("player", player);
+      console.log("otherPlayers", otherPlayers);
+      console.log("fruits", fruits);
+      break;
   }
 });
 
@@ -242,6 +269,7 @@ socket.on(gameEvents.client_roomsList, function(rooms) {
       ' player' + (room.players.length > 1 ? 's' : '');
     var roomWidget = createRoomWidget(textContent, function() {
       console.log('Sending event:', gameEvents.server_joinRoom);
+      player.color = randomColor();
       socket.emit(gameEvents.server_joinRoom, {
         roomId: room.roomId,
         player: {
@@ -284,6 +312,26 @@ socket.on(gameEvents.client_newFruit, function(fruit) {
   );
 
   console.log("snake", player, "Fruit client", fruits[0], "fruit server", fruit);
+});
+
+socket.on(gameEvents.client_playerState, function(data) {
+  //console.log('Event:', gameEvents.client_playerState);
+
+  otherPlayers = data.filter(function(_player) {
+    _player.head.x = parseInt(_player.head.x / BLOCK_WIDTH, 10);
+    _player.head.y = parseInt(_player.head.y / BLOCK_HEIGHT, 10);
+    _player.width = BLOCK_WIDTH;
+    _player.height = BLOCK_HEIGHT;
+    _player.pieces = _player.pieces.map(function(piece) {
+      piece.x = parseInt(piece.x / BLOCK_WIDTH, 10);
+      piece.y = parseInt(piece.y / BLOCK_WIDTH, 10);
+      return piece;
+    });
+
+    return _player.id != player.id;
+  });
+
+  //console.log("otherPlayers", otherPlayers);
 });
 
 function createRoomWidget(text, clickCallback) {

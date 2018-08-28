@@ -3,12 +3,14 @@ var tick = function() {
   var timer;
 
   if (typeof requestAnimationFrame === 'undefined') {
-    timer = function(callback) {
+    console.log("Request Animation Frame is undefined");
+    timer = function (callback) {
       setImmediate(function() {
         callback(++ticks);
       }, 0);
     }
   } else {
+    console.log("Using Request Animation Frame");
     timer = window.requestAnimationFrame;
   }
 

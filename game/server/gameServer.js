@@ -48,10 +48,17 @@ GameServer.prototype.startRoom = function(roomId) {
 GameServer.prototype.setPlayerKey = function(roomId, playerId, keyCode) {
   var players = rooms[roomId].getPlayers();
 
+  var data = players.map(function(player) {
+    return player.snake;
+  });
+
   players.map(function (player) {
     if (player.snake.id == playerId) {
       player.snake.setKey(keyCode);
     }
+
+    console.log('Sending event:', gameEvents.client_playerState);
+    player.socket.emit(gameEvents.client_playerState, data);
   });
 };
 
@@ -83,7 +90,7 @@ GameServer.prototype.connection = function(socket) {
   });
 
   socket.on(gameEvents.server_setPlayerKey, function (data) {
-    console.log('Event: ', gameEvents.server_setPlayerKey);
+    //console.log('Event: ', gameEvents.server_setPlayerKey);
     self.setPlayerKey(data.roomId, data.playerId, data.keyCode);
   });
 };
