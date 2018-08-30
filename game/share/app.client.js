@@ -50,11 +50,13 @@ function initGame() {
   );
 
   player.on(Snake.events.POWER_UP, function(event) {
+    console.log("Event:", Snake.events.POWER_UP);
     var score = event.size * 10;
     scoreWidget.textContent = '000000'.slice(0, -(score + '').length) + score + '';
   });
 
   player.on(Snake.events.COLLISION, function(event) {
+    console.log("Event:", Snake.events.COLLISION);
     scoreWidget.parentElement.classList.add('gameOver');
 
     game.stop();
@@ -132,16 +134,20 @@ game.onUpdate = function(delta) {
   }
 
   if (fruits.length > 0) {
-    if (player.head.x === fruits[0].x &&
-      player.head.y === fruits[0].y) {
+    
+    if (player.head.x < fruits[0].x + BLOCK_WIDTH &&
+      player.head.x + BLOCK_WIDTH >= fruits[0].x &&
+      player.head.y < fruits[0].y + BLOCK_HEIGHT &&
+      player.head.y + BLOCK_HEIGHT > fruits[0].y) {
+      
+      player.printDebugInfo();
+      fruits[0].printDebugInfo();
 
       player.grow();
       fruits = [];
       lastFruit = now;
     }
   }
-
-  player.printDebugInfo();
 };
 
 function snakeRender(snake) {

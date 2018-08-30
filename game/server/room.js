@@ -111,9 +111,14 @@ Room.prototype.generateFruit = function (worldWidth, worldHeight) {
 
 Room.prototype.checkFruitCollision = function(snake) {
   if (this.fruits.length > 0) {
-    if (snake.head.x === this.fruits[0].x &&
-      snake.head.y === this.fruits[0].y) {
+    if (snake.head.x < this.fruits[0].x + BLOCK_WIDTH &&
+      snake.head.x + BLOCK_WIDTH >= this.fruits[0].x &&
+      snake.head.y < this.fruits[0].y + BLOCK_HEIGHT &&
+      snake.head.y + BLOCK_HEIGHT > this.fruits[0].y) {
+
       console.log("Snake ate the fruit.");
+      snake.printDebugInfo();
+      this.fruits[0].printDebugInfo();
       this.fruits = [];
       snake.grow();
     }
