@@ -42,8 +42,8 @@ function initGame() {
   player = new Snake(
     parseInt(Math.random() * 999999, 10),
     randomColor(),
-    parseInt(Math.random() * window.innerWidth / 1.5, 10),
-    parseInt(Math.random() * window.innerHeight / 1.5, 10),
+    parseInt(Math.random() * renderer.canvas.width / 1.5, 10),
+    parseInt(Math.random() * renderer.canvas.height / 1.5, 10),
     BLOCK_WIDTH,
     BLOCK_HEIGHT
   );
@@ -82,8 +82,6 @@ function initGame() {
 
   player.printDebugInfo();
 }
-
-initGame();
 
 game.onUpdate = function(delta) {
   updateCount++;
@@ -206,6 +204,7 @@ function resizeGame() {
 window.addEventListener('resize', resizeGame, false);
 window.addEventListener('orientationchange', resizeGame, false);
 resizeGame();
+initGame();
 
 document.body.addEventListener('keydown', function(e) {
   var key = e.keyCode;
@@ -294,8 +293,8 @@ socket.on(gameEvents.client_roomsList, function(rooms) {
         y: player.head.y,
         color: player.color
       },
-      maxWidth: window.innerWidth,
-      maxHeight: window.innerHeight
+      maxWidth: renderer.canvas.width,
+      maxHeight: renderer.canvas.height
     });
   });
   roomWidget.classList.add('newRoomWidget');
