@@ -36,6 +36,7 @@ var screens = {
 var updateCount = 0;
 
 function initGame() {
+  console.log("Client:initGame")
   gameOver.classList.add('hidden');
   scoreWidget.textContent = '000000';
 
@@ -72,8 +73,6 @@ function initGame() {
     }, 100);
   });
 
-  console.log(player);
-
   fruits = [];
   lastFruit = 0;
   fruitDelta = 0;
@@ -83,7 +82,14 @@ function initGame() {
   player.printDebugInfo();
 }
 
+game.onStart = function() {
+  console.log("Client:game:onStart");
+  player.printDebugInfo();
+}
+
 game.onUpdate = function(delta) {
+  //console.log("Client:game:onUpdate");
+  //player.printDebugInfo();
   updateCount++;
   //console.log("updateCount", updateCount);
   var now = performance.now();
@@ -110,20 +116,18 @@ game.onUpdate = function(delta) {
   player.checkCollision();
 
   if (player.head.x < 0) {
-    player.head.x =
-      parseInt(renderer.canvas.width / player.width, 10);
+    player.head.x = renderer.canvas.width;
   }
 
-  if (player.head.x > parseInt(renderer.canvas.width / player.width, 10)) {
+  if (player.head.x > renderer.canvas.width) {
     player.head.x = 0;
   }
 
   if (player.head.y < 0) {
-    player.head.y =
-      parseInt(renderer.canvas.height / player.height, 10);
+    player.head.y = renderer.canvas.height;
   }
 
-  if (player.head.y > parseInt(renderer.canvas.height / player.height, 10)) {
+  if (player.head.y > renderer.canvas.height) {
     player.head.y = 0;
   }
 
@@ -136,28 +140,16 @@ game.onUpdate = function(delta) {
       lastFruit = now;
     }
   }
-};
 
-game.onRender = function() {
-  ctx.clearRect(0, 0, renderer.canvas.width, renderer.canvas.height);
-
-  snakeRender(player);
-
-  fruits.forEach(function (fruit) {
-    fruitRender(fruit);
-  });
-
-  otherPlayers.map(function(player) {
-    snakeRender(player);
-  });
+  player.printDebugInfo();
 };
 
 function snakeRender(snake) {
   snake.pieces.forEach(function (piece) {
     ctx.fillStyle = snake.color;
     ctx.fillRect(
-      piece.x * snake.width,
-      piece.y * snake.height,
+      piece.x,
+      piece.y,
       snake.width,
       snake.height
     );
@@ -167,15 +159,39 @@ function snakeRender(snake) {
 function fruitRender(fruit) {
   ctx.fillStyle = fruit.color;
   ctx.fillRect(
-    fruit.x * fruit.width,
-    fruit.y * fruit.height,
+    fruit.x,
+    fruit.y,
     fruit.width,
     fruit.height
   );
 }
 
+game.onRender = function() {
+  //console.log("Client:game:onRender");
+  //player.printDebugInfo();
+  ctx.clearRect(0, 0, renderer.canvas.width, renderer.canvas.height);
+
+  snakeRender(player);
+
+  fruits.forEach(function (fruit) {
+    fruitRender(fruit);
+  });
+
+  otherPlayers.map(function(snake) {
+    snakeRender(snake);
+  });
+};
+
 function randomColor() {
   return "#" + ((1 << 24) * Math.random() | 0).toString(16);
+}
+
+function createRoomWidget(text, clickCallback) {
+  var roomWidget = document.createElement('div');
+  roomWidget.textContent = text;
+  roomWidget.addEventListener('click', clickCallback);
+
+  return roomWidget;
 }
 
 function resizeGame() {
@@ -306,8 +322,8 @@ socket.on(gameEvents.client_newFruit, function(fruit) {
 
   fruits[0] = new Fruit(
     fruitColor,
-    parseInt(fruit.x / BLOCK_WIDTH, 10),
-    parseInt(fruit.y / BLOCK_HEIGHT, 10),
+    fruit.x,
+    fruit.y,
     BLOCK_WIDTH,
     BLOCK_HEIGHT
   );
@@ -319,26 +335,11 @@ socket.on(gameEvents.client_playerState, function(data) {
   //console.log('Event:', gameEvents.client_playerState);
 
   otherPlayers = data.filter(function(_player) {
-    _player.head.x = parseInt(_player.head.x / BLOCK_WIDTH, 10);
-    _player.head.y = parseInt(_player.head.y / BLOCK_HEIGHT, 10);
     _player.width = BLOCK_WIDTH;
     _player.height = BLOCK_HEIGHT;
-    _player.pieces = _player.pieces.map(function(piece) {
-      piece.x = parseInt(piece.x / BLOCK_WIDTH, 10);
-      piece.y = parseInt(piece.y / BLOCK_WIDTH, 10);
-      return piece;
-    });
 
     return _player.id != player.id;
   });
 
   //console.log("otherPlayers", otherPlayers);
 });
-
-function createRoomWidget(text, clickCallback) {
-  var roomWidget = document.createElement('div');
-  roomWidget.textContent = text;
-  roomWidget.addEventListener('click', clickCallback);
-
-  return roomWidget;
-}

@@ -6,9 +6,12 @@ var Game = function(fps) {
   this.lastTime = 0;
   this.raf = 0;
 
+  this.onStart = function() {};
+
   this.onUpdate = function(delta) {};
 
   this.onRender = function() {};
+  
 };
 
 Game.prototype.update = function(delta) {
@@ -31,6 +34,8 @@ Game.prototype.loop = function(now) {
 };
 
 Game.prototype.start = function() {
+  this.onStart();
+  
   if(this.raf < 1) {
     this.loop(0);
   }

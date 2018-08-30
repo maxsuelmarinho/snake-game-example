@@ -111,13 +111,8 @@ Room.prototype.generateFruit = function (worldWidth, worldHeight) {
 
 Room.prototype.checkFruitCollision = function(snake) {
   if (this.fruits.length > 0) {
-    var x = parseInt(snake.head.x / BLOCK_WIDTH, 10);
-    var y = parseInt(snake.head.y / BLOCK_HEIGHT, 10);
-
-    //console.log("snake[x: " + x + "; y: " + y + "] fruit[x: " + self.fruits[0].x + "; y: " + self.fruits[0].y + "]");
-
-    if (x === this.fruits[0].x &&
-      y === this.fruits[0].y) {
+    if (snake.head.x === this.fruits[0].x &&
+      snake.head.y === this.fruits[0].y) {
       console.log("Snake ate the fruit.");
       this.fruits = [];
       snake.grow();
@@ -128,8 +123,8 @@ Room.prototype.checkFruitCollision = function(snake) {
 Room.prototype.addFruit = function(position) {
   this.fruits[0] = new Fruit(
     this.fruitColor,
-    parseInt(position.x / BLOCK_WIDTH, 10),
-    parseInt(position.y / BLOCK_HEIGHT, 10),
+    position.x,
+    position.y,
     1,
     1
   );
