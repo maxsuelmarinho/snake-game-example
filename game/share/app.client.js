@@ -79,13 +79,15 @@ function initGame() {
   fruitDelta = 0;
 
   otherPlayers = [];
+
+  player.printDebugInfo();
 }
 
 initGame();
 
 game.onUpdate = function(delta) {
   updateCount++;
-  console.log("updateCount", updateCount);
+  //console.log("updateCount", updateCount);
   var now = performance.now();
 
   /*
@@ -311,7 +313,7 @@ socket.on(gameEvents.client_newFruit, function(fruit) {
     BLOCK_HEIGHT
   );
 
-  console.log("snake", player, "Fruit client", fruits[0], "fruit server", fruit);
+  fruits[0].printDebugInfo();
 });
 
 socket.on(gameEvents.client_playerState, function(data) {

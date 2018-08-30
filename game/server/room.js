@@ -4,20 +4,24 @@ var gameEvents = require('./../share/events.js');
 var BLOCK_WIDTH = 16;
 var BLOCK_HEIGHT = 16;
 
-var Room = function(fps, worldWidth, worldHeight) {
+var Room = function(id, fps, worldWidth, worldHeight) {
+  this.id = id;
+  this.worldWidth = worldWidth;
+  this.worldHeight = worldHeight;
   this.players = [];
   this.fruits = [];
   this.fruitColor = '#c00';
   this.fruitDelay = 1500;
   this.lastFruit = 0;
   this.fruitDelta = 0;
-  var self = this;
-
+  
   this.game = new Game(fps);
   this.gameUpdateRate = 1;
   this.gameUpdates = 0;
   this.updateCount = 0;
   
+  var self = this;
+
   this.game.onUpdate = function(delta) {
     self.updateCount++;
     //console.log("updateCount", self.updateCount);
@@ -133,6 +137,32 @@ Room.prototype.addFruit = function(position) {
 
 Room.prototype.getPlayers = function() {
   return this.players;
+};
+
+Room.prototype.debugInfo = function () {
+  var self = this;
+  var fruitsInfo = "";
+  this.fruits.forEach(function (fruit, index) {
+    fruitsInfo += fruit.debugInfo();
+    if (index < self.fruits.length - 1) {
+      fruitsInfo += ",";
+    }
+  });
+
+  var playersInfo = "";
+  this.players.forEach(function (player, index) {
+    playersInfo += player.snake.debugInfo();
+    if (index < self.players.length - 1) {
+      playersInfo += ",";
+    }
+  });
+
+  return '{"id":' + this.id + ',"worldWidth":' + this.worldWidth + ',"worldHeight":' + this.worldHeight + 
+    ',"fruits":[' + fruitsInfo + '],"players":[' + playersInfo + ']}';
+};
+
+Room.prototype.printDebugInfo = function () {
+  console.log(this.debugInfo());
 };
 
 module.exports = Room;

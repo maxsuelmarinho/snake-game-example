@@ -83,4 +83,13 @@ Snake.prototype.checkCollision = function() {
   }
 };
 
+Snake.prototype.debugInfo = function () {
+  return '{"id":' + this.id + ', "x":' + this.head.x + ',"y":' + this.head.y + 
+    ',"width":' + this.width + ',"height":' + this.height + '}';
+};
+
+Snake.prototype.printDebugInfo = function () {
+  console.log(this.debugInfo());
+};
+
 module.exports = Snake;

@@ -9,7 +9,7 @@ var GameServer = function() {
 };
 
 GameServer.prototype.newRoom = function(maxWidth, maxHeight) {
-  var room = new Room(FPS, maxWidth, maxHeight);
+  var room = new Room(rooms.length, FPS, maxWidth, maxHeight);
   rooms.push(room);
   return rooms.length - 1;
 };
@@ -42,6 +42,7 @@ GameServer.prototype.listRooms = function() {
 
 GameServer.prototype.startRoom = function(roomId) {
   console.log('Server:startRoom');
+  rooms[roomId].printDebugInfo();
   rooms[roomId].start();
 };
 
