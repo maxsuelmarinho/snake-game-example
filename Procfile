@@ -1,0 +1,1 @@
+web: grunt browserify && cd game && npm start
