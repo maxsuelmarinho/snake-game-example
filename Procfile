@@ -1,1 +1,1 @@
-web: grunt browserify && cd game && npm start
+web: npm install && cd game && npm install && cd .. && grunt browserify && cd game && npm start
