@@ -130,8 +130,8 @@ Room.prototype.addFruit = function(position) {
     this.fruitColor,
     position.x,
     position.y,
-    1,
-    1
+    BLOCK_WIDTH,
+    BLOCK_HEIGHT
   );
 };
 

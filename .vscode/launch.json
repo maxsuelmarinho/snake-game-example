@@ -11,7 +11,7 @@
             "address": "peon",
             "port": 9229,
             "localRoot": "${workspaceFolder}",
-            "remoteRoot": "/home/vagrant/projects/maxsuelmarinho/snake-game-example"
+            "remoteRoot": "${env:VS_CODE_REMOTE_WORKSPACE}/${workspaceFolderBasename}"
         },
         {
             "type": "node",
@@ -23,7 +23,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFoler}/game/bin/www"
+            "program": "${workspaceFolder}/game/bin/www"
         }
     ]
 }

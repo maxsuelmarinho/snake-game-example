@@ -63,6 +63,16 @@ GameServer.prototype.setPlayerKey = function(roomId, playerId, keyCode) {
   });
 };
 
+GameServer.prototype.spawnFruit = function(roomId, maxWidth, maxHeight) {
+  var position = {
+    x: Math.random() * maxWidth,
+    y: Math.random() * maxHeight
+  };
+
+  rooms[roomId].addFruit(position);
+  return position;
+};
+
 GameServer.prototype.connection = function(socket) {
 
   var self = this;
@@ -93,6 +103,13 @@ GameServer.prototype.connection = function(socket) {
   socket.on(gameEvents.server_setPlayerKey, function (data) {
     //console.log('Event: ', gameEvents.server_setPlayerKey);
     self.setPlayerKey(data.roomId, data.playerId, data.keyCode);
+  });
+
+  socket.on(gameEvents.server_spawnFruit, function(data) {
+    console.log('Event: ', gameEvents.server_spawnFruit);
+
+    var position = this.spawnFruit(data.roomId, data.maxWidth, data.maxHeight);
+    socket.emit(gameEvents.client_newFruit, position);
   });
 };
 

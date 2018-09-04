@@ -14,7 +14,7 @@ var Snake = function(id, colorHex, x, y, width, height) {
   this.pieces = [this.head];
   this.input = {};
   this.readyToGrow = false;
-  this.speed = 16;
+  this.speed = 160;
 };
 
 Snake.events = {
