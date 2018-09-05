@@ -11,7 +11,7 @@ var BLOCK_HEIGHT = 16;
 var FPS = 20;
 var renderer =
   new Renderer(0, 0, document.getElementById('gameCanvas'));
-var game = new Game(FPS);
+var game;
 
 var player;
 var otherPlayers = [];
@@ -37,14 +37,17 @@ var updateCount = 0;
 
 function initGame() {
   console.log("Client:initGame")
+
+  game = new Game(FPS, renderer.canvas.width, renderer.canvas.height);
+
   gameOver.classList.add('hidden');
   scoreWidget.textContent = '000000';
 
   player = new Snake(
     parseInt(Math.random() * 999999, 10),
     randomColor(),
-    parseInt(Math.random() * renderer.canvas.width / 1.5, 10),
-    parseInt(Math.random() * renderer.canvas.height / 1.5, 10),
+    Math.random() * renderer.canvas.width / 1.5,
+    Math.random() * renderer.canvas.height / 1.5,
     BLOCK_WIDTH,
     BLOCK_HEIGHT
   );
@@ -63,10 +66,10 @@ function initGame() {
     setTimeout(function() {
       ctx.fillStyle = '#f00';
       ctx.fillRect(
-        event.point.x * player.width,
-        event.point.y * player.height,
-        player.width,
-        player.height
+        event.point.x * BLOCK_WIDTH,
+        event.point.y * BLOCK_HEIGHT,
+        BLOCK_WIDTH,
+        BLOCK_HEIGHT
       );
     }, 0);
 
@@ -84,12 +87,74 @@ function initGame() {
   player.printDebugInfo();
 }
 
-game.onStart = function() {
-  console.log("Client:game:onStart");
-  player.printDebugInfo();
+function snakeRender(snake) {
+  snake.pieces.forEach(function (piece) {
+    ctx.fillStyle = snake.color;
+    ctx.fillRect(
+      piece.x,
+      piece.y,
+      snake.width,
+      snake.height
+    );
+  });
 }
 
-game.onUpdate = function(delta) {
+function fruitRender(fruit) {
+  ctx.fillStyle = fruit.color;
+  ctx.fillRect(
+    fruit.x,
+    fruit.y,
+    fruit.width,
+    fruit.height
+  );
+}
+
+function randomColor() {
+  return "#" + ((1 << 24) * Math.random() | 0).toString(16);
+}
+
+function createRoomWidget(text, clickCallback) {
+  var roomWidget = document.createElement('div');
+  roomWidget.textContent = text;
+  roomWidget.addEventListener('click', clickCallback);
+
+  return roomWidget;
+}
+
+function resizeGame() {
+  var gameArea = document.getElementById('gameArea');
+  var widthToHeight = 4 / 3;
+  var newWidth = window.innerWidth;
+  var newHeight = window.innerHeight;
+  var newWidthToHeight = newWidth / newHeight;
+
+  if (newWidthToHeight > widthToHeight) {
+    newWidth = newHeight * widthToHeight;
+  } else {
+    newHeight = newWidth / widthToHeight;
+  }
+
+  gameArea.style.width = newWidth + 'px';
+  gameArea.style.height = newHeight + 'px';
+
+  gameArea.style.marginTop = (-newHeight / 2) + 'px';
+  gameArea.style.marginLeft = (-newWidth / 2) + 'px';
+
+  renderer.canvas.width = newWidth;
+  renderer.canvas.height = newHeight;
+}
+
+window.addEventListener('resize', resizeGame, false);
+window.addEventListener('orientationchange', resizeGame, false);
+resizeGame();
+initGame();
+
+game.onStart = function () {
+  console.log("Client:game:onStart");
+  player.printDebugInfo();
+};
+
+game.onUpdate = function (delta) {
   //console.log("Client:game:onUpdate");
   //player.printDebugInfo();
   updateCount++;
@@ -134,12 +199,12 @@ game.onUpdate = function(delta) {
   }
 
   if (fruits.length > 0) {
-    
+
     if (player.head.x < fruits[0].x + BLOCK_WIDTH &&
       player.head.x + BLOCK_WIDTH >= fruits[0].x &&
       player.head.y < fruits[0].y + BLOCK_HEIGHT &&
       player.head.y + BLOCK_HEIGHT > fruits[0].y) {
-      
+
       player.printDebugInfo();
       fruits[0].printDebugInfo();
 
@@ -149,28 +214,6 @@ game.onUpdate = function(delta) {
     }
   }
 };
-
-function snakeRender(snake) {
-  snake.pieces.forEach(function (piece) {
-    ctx.fillStyle = snake.color;
-    ctx.fillRect(
-      piece.x,
-      piece.y,
-      snake.width,
-      snake.height
-    );
-  });
-}
-
-function fruitRender(fruit) {
-  ctx.fillStyle = fruit.color;
-  ctx.fillRect(
-    fruit.x,
-    fruit.y,
-    fruit.width,
-    fruit.height
-  );
-}
 
 game.onRender = function() {
   //console.log("Client:game:onRender");
@@ -187,46 +230,6 @@ game.onRender = function() {
     snakeRender(snake);
   });
 };
-
-function randomColor() {
-  return "#" + ((1 << 24) * Math.random() | 0).toString(16);
-}
-
-function createRoomWidget(text, clickCallback) {
-  var roomWidget = document.createElement('div');
-  roomWidget.textContent = text;
-  roomWidget.addEventListener('click', clickCallback);
-
-  return roomWidget;
-}
-
-function resizeGame() {
-  var gameArea = document.getElementById('gameArea');
-  var widthToHeight = 4 / 3;
-  var newWidth = window.innerWidth;
-  var newHeight = window.innerHeight;
-  var newWidthToHeight = newWidth / newHeight;
-
-  if(newWidthToHeight > widthToHeight) {
-    newWidth = newHeight * widthToHeight;
-  } else {
-    newHeight = newWidth / widthToHeight;
-  }
-
-  gameArea.style.width = newWidth + 'px';
-  gameArea.style.height = newHeight + 'px';
-
-  gameArea.style.marginTop = (-newHeight / 2) + 'px';
-  gameArea.style.marginLeft = (-newWidth / 2) + 'px';
-
-  renderer.canvas.width = newWidth;
-  renderer.canvas.height = newHeight;
-}
-
-window.addEventListener('resize', resizeGame, false);
-window.addEventListener('orientationchange', resizeGame, false);
-resizeGame();
-initGame();
 
 document.body.addEventListener('keydown', function(e) {
   var key = e.keyCode;

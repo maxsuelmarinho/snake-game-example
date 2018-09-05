@@ -15,7 +15,7 @@ var Room = function(id, fps, worldWidth, worldHeight) {
   this.lastFruit = 0;
   this.fruitDelta = 0;
   
-  this.game = new Game(fps);
+  this.game = new Game(fps, worldWidth, worldHeight);
   this.gameUpdateRate = 1;
   this.gameUpdates = 0;
   this.updateCount = 0;

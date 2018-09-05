@@ -1,7 +1,9 @@
 var tick = require('./tick.js');
 
-var Game = function(fps) {
+var Game = function(fps, worldWidth, worldHeight) {
   this.fps = fps;
+  this.worldWidth = worldWidth;
+  this.worldHeight = worldHeight
   this.delay = 1000 / this.fps;
   this.lastTime = 0;
   this.raf = 0;
