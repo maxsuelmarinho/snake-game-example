@@ -37,8 +37,9 @@ var updateCount = 0;
 
 function initGame() {
   console.log("Client:initGame")
+  console.log('"screen": {"width":' + renderer.canvas.width + ',"height":' + renderer.canvas.height +'}')
 
-  game = new Game(FPS, renderer.canvas.width, renderer.canvas.height);
+  game = new Game(FPS, renderer.canvas.width / BLOCK_WIDTH, renderer.canvas.height / BLOCK_HEIGHT);
 
   gameOver.classList.add('hidden');
   scoreWidget.textContent = '000000';
@@ -46,10 +47,10 @@ function initGame() {
   player = new Snake(
     parseInt(Math.random() * 999999, 10),
     randomColor(),
-    Math.random() * renderer.canvas.width / 1.5,
-    Math.random() * renderer.canvas.height / 1.5,
-    BLOCK_WIDTH,
-    BLOCK_HEIGHT
+    Math.random() * game.worldWidth / 1.5,
+    Math.random() * game.worldHeight / 1.5,
+    1,
+    1
   );
 
   player.on(Snake.events.POWER_UP, function(event) {
@@ -91,10 +92,10 @@ function snakeRender(snake) {
   snake.pieces.forEach(function (piece) {
     ctx.fillStyle = snake.color;
     ctx.fillRect(
-      piece.x,
-      piece.y,
-      snake.width,
-      snake.height
+      piece.x * BLOCK_WIDTH,
+      piece.y * BLOCK_HEIGHT,
+      snake.width * BLOCK_WIDTH,
+      snake.height * BLOCK_HEIGHT
     );
   });
 }
@@ -102,10 +103,10 @@ function snakeRender(snake) {
 function fruitRender(fruit) {
   ctx.fillStyle = fruit.color;
   ctx.fillRect(
-    fruit.x,
-    fruit.y,
-    fruit.width,
-    fruit.height
+    fruit.x * BLOCK_WIDTH,
+    fruit.y * BLOCK_HEIGHT,
+    fruit.width * BLOCK_WIDTH,
+    fruit.height * BLOCK_HEIGHT
   );
 }
 
@@ -183,27 +184,27 @@ game.onUpdate = function (delta) {
   player.checkCollision();
 
   if (player.head.x < 0) {
-    player.head.x = renderer.canvas.width;
+    player.head.x = this.worldWidth;
   }
 
-  if (player.head.x > renderer.canvas.width) {
+  if (player.head.x > this.worldWidth) {
     player.head.x = 0;
   }
 
   if (player.head.y < 0) {
-    player.head.y = renderer.canvas.height;
+    player.head.y = this.worldHeight;
   }
 
-  if (player.head.y > renderer.canvas.height) {
+  if (player.head.y > this.worldHeight) {
     player.head.y = 0;
   }
 
   if (fruits.length > 0) {
 
-    if (player.head.x < fruits[0].x + BLOCK_WIDTH &&
-      player.head.x + BLOCK_WIDTH >= fruits[0].x &&
-      player.head.y < fruits[0].y + BLOCK_HEIGHT &&
-      player.head.y + BLOCK_HEIGHT > fruits[0].y) {
+    if (player.head.x < fruits[0].x + fruits[0].width &&
+      player.head.x + player.width >= fruits[0].x &&
+      player.head.y < fruits[0].y + fruits[0].height &&
+      player.head.y + player.height > fruits[0].y) {
 
       player.printDebugInfo();
       fruits[0].printDebugInfo();
@@ -318,8 +319,8 @@ socket.on(gameEvents.client_roomsList, function(rooms) {
         y: player.head.y,
         color: player.color
       },
-      maxWidth: renderer.canvas.width,
-      maxHeight: renderer.canvas.height
+      maxWidth: renderer.canvas.width / BLOCK_WIDTH,
+      maxHeight: renderer.canvas.height / BLOCK_HEIGHT
     });
   });
   roomWidget.classList.add('newRoomWidget');
@@ -333,8 +334,8 @@ socket.on(gameEvents.client_newFruit, function(fruit) {
     fruitColor,
     fruit.x,
     fruit.y,
-    BLOCK_WIDTH,
-    BLOCK_HEIGHT
+    1,
+    1
   );
 
   fruits[0].printDebugInfo();
@@ -344,9 +345,6 @@ socket.on(gameEvents.client_playerState, function(data) {
   //console.log('Event:', gameEvents.client_playerState);
 
   otherPlayers = data.filter(function(_player) {
-    _player.width = BLOCK_WIDTH;
-    _player.height = BLOCK_HEIGHT;
-
     return _player.id != player.id;
   });
 

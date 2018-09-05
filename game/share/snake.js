@@ -9,12 +9,12 @@ var Snake = function(id, colorHex, x, y, width, height) {
     x: x,
     y: y
   };
-  this.width = width || 16;
-  this.height = height || 16;
+  this.width = width || 1;
+  this.height = height || 1;
   this.pieces = [this.head];
   this.input = {};
   this.readyToGrow = false;
-  this.speed = 160;
+  this.speed = 16;
 };
 
 Snake.events = {

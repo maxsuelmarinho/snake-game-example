@@ -63,16 +63,23 @@ p {
   height: 100%;
 }
 
+#roomList {
+  margin-top: 3em;
+}
+
 #roomList div {
-  padding: 20px 20px 80px;
+  padding: 20px 20px;
   background: #0b97c4;
   color: #fff;
   margin: 20px;
   float: left;
   width: 25%;
   min-width: 200px;
-  font-size: 3em;
+  font-family: 'Press Start 2P';
+  font-size: 2.5em;
   cursor: pointer;
+  text-align: center;
+  vertical-align: middle;
 }
 
 #roomList div.newRoomWidget {
@@ -113,6 +120,7 @@ h1, h2, h3 {
   color: #00A000;
   text-align: center;
   font-weight: 300;
+  font-family: 'Press Start 2P';
 }
 
 h1 {

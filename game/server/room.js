@@ -92,8 +92,8 @@ Room.prototype.generateFruit = function (worldWidth, worldHeight) {
     if (this.fruitDelta >= this.fruitDelay) {
       console.log("Generating a new fruit");
       var position = {
-        x: parseInt(Math.random() * worldWidth, 10),
-        y: parseInt(Math.random() * worldHeight, 10),
+        x: Math.random() * worldWidth,
+        y: Math.random() * worldHeight,
       };
 
       this.addFruit(position);
@@ -111,10 +111,10 @@ Room.prototype.generateFruit = function (worldWidth, worldHeight) {
 
 Room.prototype.checkFruitCollision = function(snake) {
   if (this.fruits.length > 0) {
-    if (snake.head.x < this.fruits[0].x + BLOCK_WIDTH &&
-      snake.head.x + BLOCK_WIDTH >= this.fruits[0].x &&
-      snake.head.y < this.fruits[0].y + BLOCK_HEIGHT &&
-      snake.head.y + BLOCK_HEIGHT > this.fruits[0].y) {
+    if (snake.head.x < this.fruits[0].x + this.fruits[0].width &&
+      snake.head.x + snake.width >= this.fruits[0].x &&
+      snake.head.y < this.fruits[0].y + this.fruits[0].height &&
+      snake.head.y + snake.height > this.fruits[0].y) {
 
       console.log("Snake ate the fruit.");
       snake.printDebugInfo();
@@ -130,8 +130,8 @@ Room.prototype.addFruit = function(position) {
     this.fruitColor,
     position.x,
     position.y,
-    BLOCK_WIDTH,
-    BLOCK_HEIGHT
+    1,
+    1
   );
 };
 
