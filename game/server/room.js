@@ -51,6 +51,7 @@ var Room = function(id, fps, worldWidth, worldHeight) {
       self.checkFruitCollision(snake);
     });
 
+    
     if (++self.gameUpdates % self.gameUpdateRate === 0) {
       self.gameUpdates = 0;
       var data = self.players.map(function(player) {
@@ -60,8 +61,16 @@ var Room = function(id, fps, worldWidth, worldHeight) {
       self.players.map(function(player) {
         //console.log('Sending event:', gameEvents.client_playerState);
         player.socket.emit(gameEvents.client_playerState, data);
+        
+        if (self.fruits.length > 0) {
+          player.socket.emit(gameEvents.client_newFruit, {
+            x: self.fruits[0].x,
+            y: self.fruits[0].y
+          });
+        }
       });
     }
+    
   };
 };
 
